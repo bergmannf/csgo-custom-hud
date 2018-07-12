@@ -1,0 +1,37 @@
+.series_counter {
+    display: flex;
+    flex-direction: column-reverse;
+    composes: base from "../theme/common.scss";
+    &[data-team="CT"] {
+        float: right;
+        margin-right: 5px;
+    }
+    &[data-team="T"] {
+        float: left;
+        margin-left: 5px;
+    }
+}
+
+.series_dot {
+    margin-top: 5px;
+    width: 5px;
+    height: 5px;
+    &[data-team="CT"] {
+        border: 2px solid #73afd6;
+        float: right;
+        text-align: right;
+    }
+    &[data-team="CT"][data-won="true"] {
+        background: #73afd6;
+    }
+    &[data-team="T"] {
+        border: 2px solid #f7bf16;
+        float: right;
+        text-align: right;
+        [data-won="true"] {
+        }
+    }
+    &[data-team="T"][data-won="true"] {
+        background: #f7bf16;
+    }
+}

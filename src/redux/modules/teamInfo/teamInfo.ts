@@ -5,13 +5,13 @@ import { all, put, select, take, takeEvery, takeLatest } from "redux-saga/effect
 import { SagaIterator } from "redux-saga";
 import { team1, team2 } from "../../../config/teamInfo";
 import { State } from "../index";
-import { GameStateIntegration } from "../../../dataTypes";
+import { GameStateIntegration, GameStateIntegrationResponse } from "../../../dataTypes";
 import RoundPhase = GameStateIntegration.RoundPhase;
 import { SET_ROUND_WINNER } from "../roundWinner/roundWinner";
 export const SET_TEAM_INFO = "hud/SET_TEAM_INFO";
 export const setTeamInfo = createAction<TeamInfoState>(SET_TEAM_INFO);
 
-export interface TeamInfo {
+export interface StaticTeamInfo {
     /**
      * チーム名.
      */
@@ -22,30 +22,50 @@ export interface TeamInfo {
     logo: string;
 }
 
+export interface DynamicTeamInfo {
+    /**
+     * Rounds this team has already won in this best-of-X series.
+     */
+    roundsWon: number;
+    /**
+     * Rounds this team has to win, to win the complete best-of-X series.
+     */
+    roundsToWin: number;
+}
+
 export interface TeamInfoState {
-    t: TeamInfo;
-    ct: TeamInfo;
+    t: StaticTeamInfo & DynamicTeamInfo;
+    ct: StaticTeamInfo & DynamicTeamInfo;
 }
 const initialState: TeamInfoState = {
     t: {
         name: null,
         logo: null,
+        roundsWon: 0,
+        roundsToWin: 0,
     },
     ct: {
         name: null,
         logo: null,
+        roundsWon: 0,
+        roundsToWin: 0,
     },
 };
 
 export function* runSetTeamInfoState(): SagaIterator {
+    const gsiResponse: GameStateIntegrationResponse = yield select((state: State) => state.gsi);
     yield put(setTeamInfo({
         t: {
             name: team1.name || null,
             logo: team1.logo,
+            roundsWon: gsiResponse.map.team_t.matches_won_this_series,
+            roundsToWin: gsiResponse.map.num_matches_to_win_series,
         },
         ct: {
             name: team2.name || null,
             logo: team2.logo,
+            roundsWon: gsiResponse.map.team_ct.matches_won_this_series,
+            roundsToWin: gsiResponse.map.num_matches_to_win_series,
         },
     }));
 }

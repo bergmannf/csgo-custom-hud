@@ -2,6 +2,7 @@ import * as React from "react";
 import { BaseComponent } from "../util/baseComponent";
 import { TeamLogoResolver } from "../../util/teamLogoResolver";
 import { RoundCounter, RoundCounterProps } from "../roundCounter/RoundCounter";
+import { SeriesCounter, SeriesCounterProps } from "../seriesCounter/SeriesCounter";
 import { Timer, TimerProps } from "../timer/Timer";
 import { GameStateIntegration } from "../../dataTypes";
 import { PercentageTimer, PercentageTimerProps } from "../percentageTimer/PercentageTimer";
@@ -51,6 +52,14 @@ export interface TopBarProps {
      * C4の解除カウントダウンタイマー.
      */
     defuseTimer: PercentageTimerProps;
+    /**
+     * Series counter properties for CT team.
+     */
+    seriesCounterCT?: SeriesCounterProps;
+    /**
+     * Series counter properties for T team.
+     */
+    seriesCounterT?: SeriesCounterProps;
     slotSide: {
         ct: SlotSide,
         t: SlotSide,
@@ -118,9 +127,10 @@ export class TopBar extends BaseComponent<TopBarProps, {}> {
         );
     };
 
-    createTeamInfo = (team: GameStateIntegration.Team, teamInfo: TeamInfo, slotSide: SlotSide): JSX.Element => {
+    createTeamInfo = (team: GameStateIntegration.Team, teamInfo: TeamInfo, slotSide: SlotSide, seriesCounter: JSX.Element): JSX.Element => {
         return (
             <div className={classNames.teamInfo} data-team={team} data-slot-side={slotSide}>
+                {seriesCounter}
                 <p className={classNames.teamScore} data-team={team} data-slot-side={slotSide}>{teamInfo.score}</p>
                 <div className={classNames.teamLogo} data-team={team} data-slot-side={slotSide}>
                     {teamInfo.logo &&
@@ -131,12 +141,30 @@ export class TopBar extends BaseComponent<TopBarProps, {}> {
         );
     };
 
+    createSeriesCounterCT = (): JSX.Element => {
+        return (
+            <SeriesCounter {...this.props.seriesCounterCT} team="CT" />
+        );
+    };
+
+    createSeriesCounterT = (): JSX.Element => {
+        return (
+            <SeriesCounter {...this.props.seriesCounterT} team="T" />
+        );
+    };
+
     render() {
         if (isNaN(this.props.teamInfo.ct.score)) {
             return null;
         }
-        const ctTeamInfo = this.createTeamInfo(GameStateIntegration.Team.CT, this.props.teamInfo.ct, this.props.slotSide.ct);
-        const tTeamInfo = this.createTeamInfo(GameStateIntegration.Team.T, this.props.teamInfo.t, this.props.slotSide.t);
+        const ctTeamInfo = this.createTeamInfo(GameStateIntegration.Team.CT,
+            this.props.teamInfo.ct,
+            this.props.slotSide.ct,
+            this.createSeriesCounterCT());
+        const tTeamInfo = this.createTeamInfo(GameStateIntegration.Team.T,
+            this.props.teamInfo.t,
+            this.props.slotSide.t,
+            this.createSeriesCounterT());
         return (
             <div className={classNames.topBar}>
                 <div className={classNames.matchInfo}>

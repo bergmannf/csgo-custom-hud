@@ -157,6 +157,16 @@ class ContainerPage extends React.Component<Props, ContainerState> {
                     time: this.props.roundPhase.time,
                 },
                 currentPhase: this.props.roundPhase.phase,
+                seriesCounterCT: {
+                    toWinMatches: this.props.teamInfo.ct.roundsToWin,
+                    wonMatches: this.props.teamInfo.ct.roundsWon,
+                    team: "CT",
+                },
+                seriesCounterT: {
+                    toWinMatches: this.props.teamInfo.t.roundsToWin,
+                    wonMatches: this.props.teamInfo.t.roundsWon,
+                    team: "T",
+                },
                 slotSide: this.props.slotSide,
             },
             winnerTeamAnnounce: this.props.roundWinner.team !== null ? {
